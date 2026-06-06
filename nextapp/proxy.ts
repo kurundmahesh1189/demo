@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth-edge";
 import { NextResponse } from "next/server";
 
-const PUBLIC_PATHS = ["/", "/login", "/api/auth", "/progress"];
+const PUBLIC_PATHS = ["/", "/login", "/api/auth", "/api/generate", "/progress"];
 
 export const proxy = auth((req) => {
   const { pathname } = req.nextUrl;
