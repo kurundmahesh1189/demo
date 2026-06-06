@@ -203,7 +203,7 @@ export default function ProgressPage() {
             <YAxis tick={{ fill: "#94a3b8", fontSize: 12 }} />
             <Tooltip
               contentStyle={{ background: "#1e293b", border: "1px solid #334155", borderRadius: 8 }}
-              formatter={(value, name) => [value, name === "in_progress" ? "In Progress" : name.charAt(0).toUpperCase() + name.slice(1)]}
+              formatter={(value, name) => [value, name === "in_progress" ? "In Progress" : name ? name.toString().charAt(0).toUpperCase() + name.toString().slice(1) : name]}
             />
             <Legend formatter={(v) => <span className="text-slate-300 text-sm">{v === "in_progress" ? "In Progress" : v.charAt(0).toUpperCase() + v.slice(1)}</span>} />
             <Bar dataKey="done" stackId="a" fill="#22c55e" radius={[0, 0, 0, 0]} />
