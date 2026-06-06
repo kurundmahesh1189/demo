@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSession, signIn } from "next-auth/react";
 
 type Category = "person" | "product" | "technology" | "place" | "general";
 type Feature = [string, string];
@@ -55,11 +56,13 @@ function generate(domain: string, type: Category): Feature[] {
 }
 
 export default function Home() {
+  const { data: session } = useSession();
   const [input, setInput] = useState("");
-  const [result, setResult] = useState<{ domain: string; features: Feature[] } | null>(null);
+  const [result, setResult] = useState<{ domain: string; category: Category; features: Feature[] } | null>(null);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
-  function run3P() {
+  async function run3P() {
     const domain = extractDomain(input);
     if (!domain) {
       setError("⚠️ Use format: 3P something");
@@ -67,14 +70,45 @@ export default function Home() {
       return;
     }
     setError("");
-    const type = classify(domain);
-    setResult({ domain, features: generate(domain, type) });
+    const category = classify(domain);
+    const features = generate(domain, category);
+    setResult({ domain, category, features });
+
+    if (session?.user) {
+      setSaving(true);
+      await fetch("/api/generations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain, category, output: features }),
+      }).finally(() => setSaving(false));
+    }
   }
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f172a] to-[#1e293b]">
       <div className="w-[450px] bg-[rgba(30,41,59,0.95)] p-8 rounded-2xl shadow-2xl backdrop-blur">
-        <h1 className="text-2xl font-bold text-center text-slate-100 mb-6">✨ 3P Generator</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-slate-100">✨ 3P Generator</h1>
+          <div className="flex items-center gap-3">
+            <a href="/progress" className="text-xs text-slate-400 hover:text-sky-400 transition-colors">Progress</a>
+            {session?.user ? (
+              <a href="/profile" className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-white transition-colors">
+                {session.user.image && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={session.user.image} alt="" className="w-6 h-6 rounded-full" />
+                )}
+                {session.user.name?.split(" ")[0]}
+              </a>
+            ) : (
+              <button
+                onClick={() => signIn("google")}
+                className="text-xs px-3 py-1.5 rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors"
+              >
+                Sign in
+              </button>
+            )}
+          </div>
+        </div>
 
         <div className="flex gap-2">
           <input
@@ -95,6 +129,13 @@ export default function Home() {
         <p className="text-center text-sm text-slate-400 mt-2">Type: 3P &lt;domain&gt;</p>
 
         {error && <p className="mt-4 text-red-400">{error}</p>}
+
+        {!session?.user && result && (
+          <p className="mt-3 text-xs text-slate-400 text-center">
+            <button onClick={() => signIn("google")} className="text-sky-400 hover:underline">Sign in</button> to save your generations.
+          </p>
+        )}
+        {saving && <p className="mt-2 text-xs text-slate-400 text-center animate-pulse">Saving...</p>}
 
         {result && (
           <div className="mt-6">

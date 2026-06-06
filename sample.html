@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>3P Generator</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: #e2e8f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  width: 450px;
+  background: rgba(30, 41, 59, 0.95);
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  backdrop-filter: blur(10px);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.input-box {
+  display: flex;
+  gap: 10px;
+}
+
+input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  outline: none;
+}
+
+button {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #38bdf8;
+  color: #0f172a;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #0ea5e9;
+}
+
+.result {
+  margin-top: 25px;
+}
+
+.card {
+  background: #334155;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.02);
+  background: #475569;
+}
+
+.card h3 {
+  margin: 0 0 5px;
+}
+
+.tag {
+  text-align: center;
+  font-size: 14px;
+  color: #94a3b8;
+  margin-top: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>✨ 3P Generator</h1>
+
+  <div class="input-box">
+    <input id="input" placeholder="Enter any domain... (e.g. 3P cars, 3P Kohli)">
+    <button onclick="run3P()">Go</button>
+  </div>
+
+  <div class="tag">Type: 3P &lt;domain&gt;</div>
+
+  <div id="output" class="result"></div>
+</div>
+
+<script>
+function extractDomain(text) {
+  const match = text.match(/3p\s+(.+)/i);
+  return match ? match[1].trim() : null;
+}
+
+function classify(domain) {
+  const d = domain.toLowerCase();
+
+  if (d.includes("kohli") || d.includes("ronaldo") || d.includes("federer"))
+    return "person";
+
+  if (d.includes("car") || d.includes("tesla") || d.includes("ford"))
+    return "product";
+
+  if (d.includes("python") || d.includes("ai") || d.includes("tech"))
+    return "technology";
+
+  if (d.includes("city") || d.includes("hyderabad") || d.includes("india"))
+    return "place";
+
+  return "general";
+}
+
+function generate(domain, type) {
+  switch(type) {
+    case "person":
+      return [
+        ["Consistency", `${domain} performs at a high level consistently.`],
+        ["Discipline", `Strong work ethic and dedication.`],
+        ["Influence", `Impacts fans and industry significantly.`]
+      ];
+
+    case "product":
+      return [
+        ["Performance", `${domain} delivers strong functionality.`],
+        ["Design", `Focus on usability and aesthetics.`],
+        ["Innovation", `Includes modern features and improvements.`]
+      ];
+
+    case "technology":
+      return [
+        ["Scalability", `${domain} can handle growth efficiently.`],
+        ["Ecosystem", `Backed by tools and community.`],
+        ["Flexibility", `Used across multiple applications.`]
+      ];
+
+    case "place":
+      return [
+        ["Culture", `${domain} has rich traditions and history.`],
+        ["Economy", `Contributes to business and jobs.`],
+        ["Lifestyle", `Offers unique living experiences.`]
+      ];
+
+    default:
+      return [
+        ["Core Feature", `${domain} has defining characteristics.`],
+        ["Use Case", `Widely used or recognized.`],
+        ["Value", `Provides practical benefits.`]
+      ];
+  }
+}
+
+function run3P() {
+  const input = document.getElementById("input").value;
+  const output = document.getElementById("output");
+
+  const domain = extractDomain(input);
+
+  if (!domain) {
+    output.innerHTML = "⚠️ Use format: 3P something";
+    return;
+  }
+
+  const type = classify(domain);
+  const features = generate(domain, type);
+
+  let html = `<h2>3P (${domain})</h2>`;
+
+  features.forEach(f => {
+    html += `
+      <div class="card">
+        <h3>${f[0]}</h3>
+        <p>${f[1]}</p>
+      </div>
+    `;
+  });
+
+  output.innerHTML = html;
+}
+</script>
+
+</body>
+</html>
