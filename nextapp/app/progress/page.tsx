@@ -225,7 +225,7 @@ export default function ProgressPage() {
               contentStyle={{ background: "#1e293b", border: "1px solid #334155", borderRadius: 8 }}
               formatter={(v) => [`${v}%`, "Complete"]}
             />
-            <Bar dataKey="pct" radius={[0, 4, 4, 0]} label={{ position: "insideRight", fill: "#fff", fontSize: 11, formatter: (v: number) => v > 0 ? `${v}%` : "" }}>
+            <Bar dataKey="pct" radius={[0, 4, 4, 0]} label={{ position: "insideRight", fill: "#fff", fontSize: 11, formatter: (v: unknown) => Number(v) > 0 ? `${v}%` : "" }}>
               {phaseStats.map((_, i) => (
                 <Cell key={i} fill={PHASE_COLORS[i % PHASE_COLORS.length]} />
               ))}
